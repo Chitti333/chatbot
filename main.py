@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# coding: utf-8
+
 import streamlit as st
 import pandas as pd
 import google.generativeai as genai
@@ -72,22 +75,10 @@ def career_chatbot(df, vectorizer, job_vectors, generative_model):
 
     st.markdown("### Conversation History")
     for message in st.session_state.conversation:
-        role, content = message["role"], message["content"]
-
-        # Update colors for better visibility
-        if role == "User":
-            color = "#1e90ff"  # Blue for user messages
-            text_color = "#ffffff"  # White text
+        if message["role"] == "User":
+            st.markdown(f"<div style='background-color: #e6f7ff; padding: 10px; border-radius: 10px; margin: 5px 0;'><strong>You:</strong> {message['content']}</div>", unsafe_allow_html=True)
         else:
-            color = "#333333"  # Dark gray for bot responses
-            text_color = "#f8f8f8"  # Light gray text
-
-        st.markdown(
-            f"<div style='background-color: {color}; color: {text_color}; padding: 10px; "
-            f"border-radius: 10px; margin: 5px 0;'>"
-            f"<strong>{role}:</strong> {content}</div>", 
-            unsafe_allow_html=True
-        )
+            st.markdown(f"<div style='background-color: #f0f0f0; padding: 10px; border-radius: 10px; margin: 5px 0;'><strong>Bot:</strong> {message['content']}</div>", unsafe_allow_html=True)
 
     user_query = st.text_input("User:", placeholder="Type your career-related question here...", key="user_input")
 
@@ -99,13 +90,8 @@ def career_chatbot(df, vectorizer, job_vectors, generative_model):
             with st.spinner("Refining the career advice..."):
                 refined_advice = refine_career_advice(generative_model, user_query, best_job)
                 st.session_state.conversation.append({"role": "Bot", "content": refined_advice})
-                st.markdown(
-                    f"<div style='background-color: #333333; color: #f8f8f8; padding: 10px; "
-                    f"border-radius: 10px;'>"
-                    f"<strong>Bot:</strong> {refined_advice}</div>", 
-                    unsafe_allow_html=True
-                )
-    else:
+                st.markdown(f"<div style='background-color: #f0f0f0; padding: 10px; border-radius: 10px; margin: 5px 0;'><strong>Bot (refined advice):</strong> {refined_advice}</div>", unsafe_allow_html=True)
+        else:
             try:
                 context = """
                 You are a career guidance chatbot. Provide detailed, structured career guidance for job seekers.
@@ -115,12 +101,7 @@ def career_chatbot(df, vectorizer, job_vectors, generative_model):
                 prompt = f"{context}\n\nUser: {user_query}\nBot:"
                 response = generative_model.generate_content(prompt)
                 st.session_state.conversation.append({"role": "Bot", "content": response.text})
-                st.markdown(
-                    f"<div style='background-color: #333333; color: #f8f8f8; padding: 10px; "
-                    f"border-radius: 10px;'>"
-                    f"<strong>Bot:</strong> {response.text}</div>", 
-                    unsafe_allow_html=True
-                )
+                st.markdown(f"<div style='background-color: #f0f0f0; padding: 10px; border-radius: 10px; margin: 5px 0;'><strong>Bot (AI-generated):</strong> {response.text}</div>", unsafe_allow_html=True)
             except Exception as e:
                 st.error(f"Sorry, I couldn't generate a response. Error: {e}")
 
