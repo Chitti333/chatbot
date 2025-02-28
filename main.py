@@ -7,7 +7,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 st.set_page_config(page_title="Career Chatbot 🎯", page_icon="💼", layout="centered")
 
-# Initialize conversation history
 if "conversation" not in st.session_state:
     st.session_state.conversation = []
 
@@ -73,28 +72,26 @@ def career_chatbot(df, vectorizer, job_vectors, generative_model):
     st.markdown("### Conversation History")
 
     for message in st.session_state.conversation:
-        if message["role"] == "User":
-            st.markdown(
-                f"<div style='background-color: #00509E; color: white; padding: 10px; border-radius: 10px; margin: 5px 0;'><strong>You:</strong> {message['content']}</div>",
-                unsafe_allow_html=True,
-            )
-        else:
-            st.markdown(
-                f"<div style='background-color: #333333; color: white; padding: 10px; border-radius: 10px; margin: 5px 0;'><strong>Bot:</strong> {message['content']}</div>",
-                unsafe_allow_html=True,
-            )
+        role, content = message["role"], message["content"]
+        color = "#1e90ff" if role == "User" else "#333333"
+        text_color = "#ffffff" if role == "User" else "#f8f8f8"
+
+        st.markdown(
+            f"<div style='background-color: {color}; color: {text_color}; padding: 10px; border-radius: 10px; margin: 5px 0;'>"
+            f"<strong>{role}:</strong> {content}</div>", 
+            unsafe_allow_html=True
+        )
 
     user_query = st.text_input("User:", placeholder="Type your career-related question here...", key="user_input")
 
     if user_query:
-        st.session_state.conversation.append({"role": "You", "content": user_query})
+        st.session_state.conversation.append({"role": "User", "content": user_query})
         best_job = find_best_job(user_query, vectorizer, job_vectors, df)
 
         if best_job is not None:
             with st.spinner("Refining the career advice..."):
                 refined_advice = refine_career_advice(generative_model, user_query, best_job)
                 st.session_state.conversation.append({"role": "Bot", "content": refined_advice})
-                st.markdown(f"<div style='background-color: #00509E; padding: 10px; border-radius: 10px; margin: 5px 0;'><strong>Bot (refined advice):</strong> {refined_advice}</div>", unsafe_allow_html=True)
         else:
             try:
                 context = """
@@ -105,7 +102,6 @@ def career_chatbot(df, vectorizer, job_vectors, generative_model):
                 prompt = f"{context}\n\nUser: {user_query}\nBot:"
                 response = generative_model.generate_content(prompt)
                 st.session_state.conversation.append({"role": "Bot", "content": response.text})
-                st.markdown(f"<div style='background-color: #00509E; padding: 10px; border-radius: 10px; margin: 5px 0;'><strong>Bot (AI-generated):</strong> {response.text}</div>", unsafe_allow_html=True)
             except Exception as e:
                 st.error(f"Sorry, I couldn't generate a response. Error: {e}")
 
@@ -118,7 +114,7 @@ def main():
     vectorizer, job_vectors = create_career_vectorizer(df)
     API_KEY = "AIzaSyCMmi8Hzd7GHOzRtbTvsRJTX1CifvJEpFQ"
     if not API_KEY:
-        st.error("API key not found. Please set the GOOGLE_API_KEY environment variable.")
+        st.error("API key not found. Please set the API key.")
         return
     generative_model = configure_generative_model(API_KEY)
     if generative_model is None:
