@@ -94,7 +94,7 @@ def career_chatbot(df, vectorizer, job_vectors, generative_model):
             with st.spinner("Refining the career advice..."):
                 refined_advice = refine_career_advice(generative_model, user_query, best_job)
                 st.session_state.conversation.append({"role": "Bot", "content": refined_advice})
-                st.markdown(f"<div style='background-color: #f0f0f0; padding: 10px; border-radius: 10px; margin: 5px 0;'><strong>Bot (refined advice):</strong> {refined_advice}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='background-color: #00509E; padding: 10px; border-radius: 10px; margin: 5px 0;'><strong>Bot (refined advice):</strong> {refined_advice}</div>", unsafe_allow_html=True)
         else:
             try:
                 context = """
@@ -105,7 +105,7 @@ def career_chatbot(df, vectorizer, job_vectors, generative_model):
                 prompt = f"{context}\n\nUser: {user_query}\nBot:"
                 response = generative_model.generate_content(prompt)
                 st.session_state.conversation.append({"role": "Bot", "content": response.text})
-                st.markdown(f"<div style='background-color: #f0f0f0; padding: 10px; border-radius: 10px; margin: 5px 0;'><strong>Bot (AI-generated):</strong> {response.text}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='background-color: #00509E; padding: 10px; border-radius: 10px; margin: 5px 0;'><strong>Bot (AI-generated):</strong> {response.text}</div>", unsafe_allow_html=True)
             except Exception as e:
                 st.error(f"Sorry, I couldn't generate a response. Error: {e}")
 
