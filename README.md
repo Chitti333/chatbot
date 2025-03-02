@@ -53,7 +53,7 @@ Ensure you have the following installed:
 
 ## Deployment
 The chatbot has been **successfully deployed**, allowing users to access it online without setting up locally.
-Deployed Link - [text](https://career-chatbot-hx.streamlit.app/)
+Deployed Link - [Carrer-Guide](https://career-chatbot-hx.streamlit.app/)
 
 ## Future Enhancements
 - 🏆 **User Authentication**: Personalized career suggestions.
